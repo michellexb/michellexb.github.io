@@ -1,21 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Michelle&#39;s Site</title>
-    <link>/</link>
-    <description>Recent content on Michelle&#39;s Site</description>
+    <title>Projects on Michelle&#39;s Site</title>
+    <link>/projects/</link>
+    <description>Recent content in Projects on Michelle&#39;s Site</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-US</language>
-    <lastBuildDate>Fri, 11 Dec 2020 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>R vs. Python </title>
-      <link>/post/2020/12/11/r-vs-python/</link>
-      <pubDate>Fri, 11 Dec 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/post/2020/12/11/r-vs-python/</guid>
-      <description></description>
-    </item>
-    
+    <language>en-US</language><atom:link href="/projects/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Project 1</title>
       <link>/projects/project1/</link>
@@ -33,27 +23,6 @@
       <guid>/projects/project2/</guid>
       <description>```
 Michelle Bao - MB57592 - Project 2 0) Introduction # This &amp;quot;Cervical Cancer Risk Factors for Biopsy&amp;quot; dataset was obtained thanks to UCI Repository. I chose this dataset because I currently work at a ob/gyn clinic and my passion for women&amp;#39;s health is what initially motivated me to pursue a medical career. Additionally, cervical cancer is one of the most preventable cancers. The original dataset contained 858 observations and 36 columns.</description>
-    </item>
-    
-    <item>
-      <title>Projects</title>
-      <link>/projects/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/projects/</guid>
-      <description>  Check out some of my coding projects below:
- Wrangling &amp;amp; Exploratory Data Analysis
- Modeling, Inference, Prediction
-  -- Check out some of my coding projects below:  &amp;nbsp; [Wrangling &amp; Exploratory Data Analysis](/projects/project1/)  &amp;nbsp; [Modeling, Inference, Prediction](/projects/project2/)   -- </description>
-    </item>
-    
-    <item>
-      <title>Resume</title>
-      <link>/resume/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/resume/</guid>
-      <description>     </description>
     </item>
     
   </channel>

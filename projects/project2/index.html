@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Michelle Bao" />
+    
+    <link rel="shortcut icon" type="image/x-icon" href="../../img/favicon.ico">
+    <title>Project 2</title>
+    <meta name="generator" content="Hugo 0.79.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../../css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="../../post/">BLOG</a></li>
+        
+        <li><a href="../../projects/">PROJECTS</a></li>
+        
+        <li><a href="../../resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="../../projects/project2/">Project 2</a></strong>
+          </h3>
+        </div>
+ 
+<div class="blog-title">
+          <h4>
+         January 1, 0001 
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+<link href="../../rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="../../rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>```</p>
+<div id="michelle-bao---mb57592---project-2" class="section level1">
+<h1>Michelle Bao - MB57592 - Project 2</h1>
+<div id="introduction" class="section level2">
+<h2>0) Introduction</h2>
+<pre class="r"><code># This &quot;Cervical Cancer Risk Factors for Biopsy&quot; dataset was obtained thanks to UCI Repository. I chose this dataset because I currently work at a ob/gyn clinic and my passion for women&#39;s health is what initially motivated me to pursue a medical career. Additionally, cervical cancer is one of the most preventable cancers. The original dataset contained 858 observations and 36 columns. For efficiency, I have only included the following 6 variables: </code></pre>
+<pre class="r"><code>#  Binary variable (1): 
+#  &quot;IUD&quot; - 0 or 1. Research shows that IUD usage may reduce cervical cancer risks up to 30%.
+
+#  Numeric varaibles (3): 
+#  &quot;Hormonal.Contraceptives..years.&quot; - CDC states that 5+ years of birth control pill use can increase risk.
+#  &quot;Smokes..years.&quot; - CDC lists smoking as a risk factor for cervical cancer.
+#  &quot;Number.of.sexual.partners&quot; - Per Mayo Clinic, a greater number of partners increases HPV risk.
+
+#  Categorical variable (1): 
+#  &quot;Num.of.pregnancies&quot; - CDC lists having given birth to 3+ children as a risk factor. So, I adjusted the variable from numeric to categorical: &#39;Risk&#39; = 3+, &#39;No&#39; = 0-2
+
+#  Response variable (1): 
+#  &quot;Biopsy&quot; - 0 or 1. Biopsy is a method of tissue retrieval used to test for cervical cancer.</code></pre>
+<pre class="r"><code>library(dplyr) 
+library(tidyverse)
+library(randomForest)
+library(glmnet)
+data &lt;- read.csv(&quot;prj2data.csv&quot;,header=TRUE)</code></pre>
+<pre class="r"><code># modify &quot;Num.of.pregnancies&quot; variable to become categorical, rather than numeric:
+data&lt;-data%&gt;%mutate(Num.of.pregnancies = recode(Num.of.pregnancies, &#39;0&#39; = &quot;No&quot;, &#39;1&#39; = &quot;No&quot;, &#39;2&#39; = &quot;No&quot;, &#39;3&#39; = &quot;Risk&quot;, `4` = &quot;Risk&quot;, &#39;5&#39; = &quot;Risk&quot;, &#39;6&#39; = &quot;Risk&quot;, &#39;7&#39; = &quot;Risk&quot;, &#39;8&#39; = &quot;Risk&quot;, &#39;9&#39; = &quot;Risk&quot;, &#39;10&#39;=&quot;Risk&quot;, &#39;11&#39;=&quot;Risk&quot;))
+
+# remove any observations that has &#39;?&#39; in a column. Now yields 677 observations
+data &lt;- data%&gt;% filter(Num.of.pregnancies!= &#39;?&#39;)%&gt;%filter(Number.of.sexual.partners!= &#39;?&#39;)%&gt;%filter(Smokes..years.!=&#39;?&#39;)%&gt;%filter(Hormonal.Contraceptives..years.!=&#39;?&#39;)%&gt;%filter(IUD!=&#39;?&#39;)%&gt;%filter(Biopsy!=&#39;?&#39;)
+glimpse(data)</code></pre>
+<pre><code>## Rows: 677
+## Columns: 6
+## $ Number.of.sexual.partners       &lt;fct&gt; 4, 1, 1, 5, 3, 3, 3, 1, 1, 3, 1, 4, 2…
+## $ Num.of.pregnancies              &lt;fct&gt; No, No, No, Risk, Risk, No, Risk, Ris…
+## $ Smokes..years.                  &lt;fct&gt; 0, 0, 0, 37, 0, 0, 34, 0, 0, 0, 0, 0,…
+## $ Hormonal.Contraceptives..years. &lt;fct&gt; 0, 0, 0, 3, 15, 0, 0, 2, 0, 2, 8, 10,…
+## $ IUD                             &lt;fct&gt; 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0…
+## $ Biopsy                          &lt;int&gt; 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0…</code></pre>
+</div>
+<div id="manova-univariate-anovas" class="section level2">
+<h2>1) MANOVA, univariate ANOVA's</h2>
+<pre class="r"><code># MANOVA: categorical variable &#39;Num.of.pregnancies&#39; ; numerical variables = Hormonal, Smokes, Sexual partners
+manova &lt;- manova(cbind(Hormonal.Contraceptives..years., Smokes..years.,Number.of.sexual.partners) ~ Num.of.pregnancies, data = data)
+summary(manova)</code></pre>
+<pre><code>##                     Df   Pillai approx F num Df den Df    Pr(&gt;F)    
+## Num.of.pregnancies   1 0.064268   15.408      3    673 1.052e-09 ***
+## Residuals          675                                              
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code># since MANOVA yielded significant results (p = 1.052e-09), we perform ANOVA for each response variable:
+summary.aov(manova)</code></pre>
+<pre><code>##  Response Hormonal.Contraceptives..years. :
+##                     Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## Num.of.pregnancies   1   4239  4239.0  23.308 1.708e-06 ***
+## Residuals          675 122758   181.9                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response Smokes..years. :
+##                     Df  Sum Sq Mean Sq F value Pr(&gt;F)
+## Num.of.pregnancies   1    34.5  34.519  0.8783  0.349
+## Residuals          675 26527.8  39.300               
+## 
+##  Response Number.of.sexual.partners :
+##                     Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## Num.of.pregnancies   1  133.0 133.049  24.144 1.123e-06 ***
+## Residuals          675 3719.7   5.511                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code># before post-hoc t-tests, need to transform numeric variables to &#39;numeric&#39;
+data&lt;-transform(data, Hormonal.Contraceptives..years. = as.numeric(Hormonal.Contraceptives..years.))
+data&lt;-transform(data, Smokes..years. = as.numeric(Smokes..years.))
+data&lt;-transform(data, Number.of.sexual.partners = as.numeric(Number.of.sexual.partners))
+# post-hoc t-tests. Although unnecessary since the categorical variable only has 2 groups (&#39;No&#39; vs. &#39;Risk&#39;)
+pairwise.t.test(data$Hormonal.Contraceptives..years., data$Num.of.pregnancies, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  data$Hormonal.Contraceptives..years. and data$Num.of.pregnancies 
+## 
+##      No     
+## Risk 1.7e-06
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(data$Smokes..years., data$Num.of.pregnancies, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  data$Smokes..years. and data$Num.of.pregnancies 
+## 
+##      No  
+## Risk 0.35
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(data$Number.of.sexual.partners, data$Num.of.pregnancies, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  data$Number.of.sexual.partners and data$Num.of.pregnancies 
+## 
+##      No     
+## Risk 1.1e-06
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code># post-hoc t-tests yields: significant difference between the Risk and No Risk number of pregnancy groups regarding the number of sexual partners (p = 1.1e-06), and between the Risk and No Risk number of pregnancy groups regarding years of hormonal contraceptive use (p = 1.7e-06), but no significant difference regarding years of smoking (p = 0.35). </code></pre>
+<pre class="r"><code># I completed: 1 MANOVA, 3 ANOVAs, and (6*3) t-tests = 22 total tests
+# making our chance of at least 1 type I error = (1−.95^X) = (1 - .95^22) = 0.6764665 = 67.64665 %
+# so, we should use bonferroni a = .05/22 = 0.002272727 
+# after bonferroni correction, the same results remain: There is a significant difference between the Risk and No Risk number of pregnancy groups regarding the number of sexual partners, and regarding years of hormonal contraceptive use, but no significant difference regarding years of smoking. </code></pre>
+<pre class="r"><code># check MANOVA assumptions
+library(rstatix)
+group &lt;- data$Num.of.pregnancies 
+DVs &lt;- data %&gt;% select(Hormonal.Contraceptives..years. , Smokes..years. , Number.of.sexual.partners)
+# Test multivariate normality for each group:
+# note: code &#39;sapply(split(DVs,group), mshapiro_test)&#39; gives me error that my sample size is over 5000, so I am using the following: 
+shapiro.test(data$Hormonal.Contraceptives..years.[0:5000])</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  data$Hormonal.Contraceptives..years.[0:5000]
+## W = 0.81704, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>shapiro.test(data$Smokes..years.[0:5000])</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  data$Smokes..years.[0:5000]
+## W = 0.37979, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>shapiro.test(data$Number.of.sexual.partners[0:5000])</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  data$Number.of.sexual.partners[0:5000]
+## W = 0.89536, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code># all 3 yielded p&lt;.05 so assumption is violated. Will not proceed to test for homogeneity of covariance matrices
+# The MANOVA assumptions were NOT met. The population variances were NOT equal across groups. This is likely due to the non-normal nature of the variables (ex: outliers on both ends for years of smoking, 0 or 30+ years)</code></pre>
+</div>
+<div id="randomization-test" class="section level2">
+<h2>2) Randomization test</h2>
+<pre class="r"><code># first, calculate observed F-statistic for: categorical = &#39;Num.of.pregnancies&#39; ; numerical variable = &#39;Smokes..years.&#39;
+summary(aov(Smokes..years.~Num.of.pregnancies,data=data))</code></pre>
+<pre><code>##                     Df Sum Sq Mean Sq F value Pr(&gt;F)
+## Num.of.pregnancies   1     35   34.52   0.878  0.349
+## Residuals          675  26528   39.30</code></pre>
+<pre class="r"><code>observedF &lt;- 0.878
+# null hypothesis: The 2 groups (no risk for number of pregnancies, vs. yes risk number of pregnancies) have EQUAL means for years of smoking 
+# alt hypothesis: The groups&#39; means differ
+# randomization test of one-way ANOVA (N=677 and K=2): 
+# note: due to large sample size N=677, for efficiency I used 1000 repititions instead of 5000 because R kept crashing when knitting
+Fs&lt;-replicate(1000,{ 
+ new&lt;-data%&gt;%mutate(Smokes..years.=sample(Smokes..years.)) 
+ SSW&lt;- new%&gt;%group_by(Num.of.pregnancies)%&gt;%summarize(SSW=sum((Smokes..years.-mean(Smokes..years.))^2))%&gt;%
+       summarize(sum(SSW))%&gt;%pull
+ SSB&lt;- new%&gt;%mutate(mean=mean(Smokes..years.))%&gt;%group_by(Num.of.pregnancies)%&gt;%mutate(groupmean=mean(Smokes..years.))%&gt;%
+       summarize(SSB=sum((mean-groupmean)^2))%&gt;%summarize(sum(SSB))%&gt;%pull
+ (SSB/1)/(SSW/675) #compute F statistic (num df = K-1 = 2-1 = 1, denom df = N-K = 677-2 = 675)
+})
+mean(Fs&gt;observedF)</code></pre>
+<pre><code>## [1] 0.337</code></pre>
+<pre class="r"><code># interpret results: p-value = 0.367, so we fail to reject the null hypothesis. The groups &#39;No&#39; and &#39;Risk&#39; for number of pregnancies do not significantly differ regarding their mean years of smoking.
+# note: when using 5000 repetitions, p=0.347, slightly lower value but still non-significant. (just couldn&#39;t knit 5000 reps without R crashing)
+# plot visualizing the null distribution and the test statistic:
+hist(Fs, prob=T); abline(v = observedF, col=&quot;red&quot;,add=T)</code></pre>
+<p><img src="../../projects/project2_files/figure-html/unnamed-chunk-8-1.png" width="480" style="display: block; margin: auto;" /></p>
+</div>
+<div id="linear-regression" class="section level2">
+<h2>3) Linear regression</h2>
+<pre class="r"><code>library(sandwich)
+library(lmtest)
+set.seed(348)
+# first need to mean-center &#39;Hormonal...&#39;
+data$Hormonal_c &lt;- (data$Hormonal.Contraceptives..years. - mean(data$Hormonal.Contraceptives..years., na.rm = T))
+# linear regression: using response = &#39;Smokes..years.&#39; , and &#39;Hormonal...&#39; (numeric), and &#39;Num.of.pregnancies&#39; (categorical)
+fit1 &lt;- lm(Smokes..years. ~ Hormonal_c * Num.of.pregnancies, data = data)
+summary(fit1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Smokes..years. ~ Hormonal_c * Num.of.pregnancies, 
+##     data = data)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -3.682 -2.500 -2.078 -1.276 27.724 
+## 
+## Coefficients:
+##                                   Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                        4.05305    0.30221  13.411  &lt; 2e-16 ***
+## Hormonal_c                         0.06168    0.02243   2.750  0.00612 ** 
+## Num.of.pregnanciesRisk             0.39999    0.51190   0.781  0.43485    
+## Hormonal_c:Num.of.pregnanciesRisk -0.07478    0.03692  -2.025  0.04322 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 6.242 on 673 degrees of freedom
+## Multiple R-squared:  0.01269,    Adjusted R-squared:  0.008286 
+## F-statistic: 2.883 on 3 and 673 DF,  p-value: 0.03512</code></pre>
+<pre class="r"><code># interpret coefficients: 
+# intercept = 4.05305: The mean/predicted years of smoking for women with 0 years of hormone usage is 4.05305 years of smoking.
+# coefficient for &#39;Hormonal_c&#39; = 0.06168: for every 1year increase in hormone usage, predicted years of smoking increases by 0.06168 years.
+# coefficient for &#39;Num.of.pregnanciesRisk&#39; = 0.39999: Women with 3+ pregnancies (&#39;Risk&#39; group) with 0 years of hormone use have predicted smoking usage of 0.39999 more years than women with 2 or less pregnancies with 0 years of hormone usage. 
+# coefficient for &#39;Hormonal_c : Num.of.pregnanciesRisk&#39; = -0.07478: The slope of hormone usage years on smoking years for the Risk number of pregnancies group is 0.07478 less than for No Risk pregnancy groups. </code></pre>
+<pre class="r"><code># plot:
+ggplot(data, aes(Hormonal_c, Smokes..years., color = Num.of.pregnancies)) + geom_smooth(method = &quot;lm&quot;)</code></pre>
+<p><img src="../../projects/project2_files/figure-html/unnamed-chunk-11-1.png" width="480" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># check linearity: &#39;Residuals vs Fitted&#39; graph yields somewhat horizontal plot
+plot(fit1)</code></pre>
+<p><img src="../../projects/project2_files/figure-html/unnamed-chunk-12-1.png" width="480" style="display: block; margin: auto;" /><img src="../../projects/project2_files/figure-html/unnamed-chunk-12-2.png" width="480" style="display: block; margin: auto;" /><img src="../../projects/project2_files/figure-html/unnamed-chunk-12-3.png" width="480" style="display: block; margin: auto;" /><img src="../../projects/project2_files/figure-html/unnamed-chunk-12-4.png" width="480" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># check normality:
+resids&lt;-lm(Smokes..years. ~ Hormonal_c * Num.of.pregnancies, data = data)$residuals
+ggplot()+geom_histogram(aes(resids),bins=10)</code></pre>
+<p><img src="../../projects/project2_files/figure-html/unnamed-chunk-12-5.png" width="480" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># additionally, in the &#39;Normal QQ&#39; plot, the residuals are not normally distributed along the dashed line.
+# check homoskedasticity: yields p = 0.009436 , so , fail to reject null hypothesis of homoskedasticity.
+bptest(fit1)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  fit1
+## BP = 11.47, df = 3, p-value = 0.009436</code></pre>
+<pre class="r"><code># overall: linearity met. normality NOT met. homoskedasiticity met. </code></pre>
+<pre class="r"><code># recompute regression results w/ robust SE: results are essentially the same, since homoskedasticity WAS met previously.
+coeftest(fit1, vcov = vcovHC(fit1))</code></pre>
+<pre><code>## 
+## t test of coefficients:
+## 
+##                                    Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                        4.053055   0.319664 12.6791  &lt; 2e-16 ***
+## Hormonal_c                         0.061683   0.026450  2.3321  0.01999 *  
+## Num.of.pregnanciesRisk             0.399989   0.545659  0.7330  0.46379    
+## Hormonal_c:Num.of.pregnanciesRisk -0.074785   0.041276 -1.8118  0.07046 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code># Our model explains 0.9873127 of the variation in outcome. The proportion of variance in y (years smoking) explained by x*x (hormonal_c * number of pregnancies) = R^2 = 1- (SSR/SST) = 0.9873127
+1 - summary(fit1)$r.sq</code></pre>
+<pre><code>## [1] 0.9873127</code></pre>
+</div>
+<div id="linear-regression-with-bootstrapped-se" class="section level2">
+<h2>4) Linear regression, with bootstrapped SE</h2>
+<pre class="r"><code># calculate bootstrapped SE via resampling
+samp_dist &lt;- replicate(5000, {
+    boot_dat &lt;- sample_frac(data, replace = T)
+    fit2 &lt;- lm(Smokes..years. ~ Hormonal_c * Num.of.pregnancies, data = boot_dat)
+    coef(fit2)
+})
+samp_dist %&gt;% t %&gt;% as.data.frame %&gt;% summarize_all(sd)</code></pre>
+<pre><code>##   (Intercept) Hormonal_c Num.of.pregnanciesRisk
+## 1   0.3170231  0.0262004              0.5406555
+##   Hormonal_c:Num.of.pregnanciesRisk
+## 1                        0.04065513</code></pre>
+<pre class="r"><code># changes compared to original SE&#39;s and robust SE&#39;s
+# The calculation yielded bootstrap SE ~ 0.02605363, ~ 0.5441295, and ~ 0.04136911, respectively, which are all higher/greater than the previous SE&#39;s.</code></pre>
+</div>
+<div id="logistic-regression" class="section level2">
+<h2>5) Logistic regression</h2>
+<pre class="r"><code># logistic regression: using binary response = &#39;Biopsy&#39; ; 2 explanatory = partners &amp; hormones 
+fit3 &lt;- glm(Biopsy ~ Number.of.sexual.partners + Hormonal.Contraceptives..years., family=&quot;binomial&quot;, data=data)
+coeftest(fit3)</code></pre>
+<pre><code>## 
+## z test of coefficients:
+## 
+##                                   Estimate Std. Error z value  Pr(&gt;|z|)    
+## (Intercept)                     -2.5875802  0.4061392 -6.3712 1.876e-10 ***
+## Number.of.sexual.partners        0.0189490  0.0640725  0.2957    0.7674    
+## Hormonal.Contraceptives..years. -0.0097423  0.0116723 -0.8347    0.4039    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code># From the logistic regression: 
+# Every 1person increase in the number of sexual partners mulptiplies the odds of positive biopsy results for cervical cancer by e ^ 0.0189490 = 1.01913 times, which is consistent with Mayo Clinic statement.
+# Every 1year increase in hormone birth control usage multiplies the odds of positive/cancerous Biopsy by e ^ -0.0097423 = 0.990305 times.</code></pre>
+<pre class="r"><code># confusion matrix:
+prob &lt;- predict(fit3, type = &quot;response&quot;)
+truth1 &lt;- data$Biopsy
+table(prediction = as.numeric(prob &gt; 0.5), truth1)</code></pre>
+<pre><code>##           truth1
+## prediction   0   1
+##          0 631  46</code></pre>
+<pre class="r"><code># confusion matrix yields that 46 of the 46 cancerous biopsy results were identified as false negative, and 0 out of the 631 non-cancer biopsies were false positives. We see a higher false negative rate than false positive rate (aka. no false positives predicted). </code></pre>
+<pre class="r"><code># accuracy, sensitivity (TPR), specificity (TNR), precision (PPV), AUC:
+prob &lt;- predict(fit3, type = &quot;response&quot;)
+pred &lt;- ifelse(prob &gt; 0.5, 1, 0)
+table(prediction = pred, truth = data$Biopsy) %&gt;% addmargins</code></pre>
+<pre><code>##           truth
+## prediction   0   1 Sum
+##        0   631  46 677
+##        Sum 631  46 677</code></pre>
+<pre class="r"><code>accuracy = 631/677
+sensitivity = 0/46 # true positive rate, probability of detecting cancer if they really have it
+specificity = 631/631 # probability of a negative biopsy for non-cancerous woman
+# precision = N/A because PPV = proportion classified as cancer who actually are. The model predicted 0 as cancerous.
+library(randomForest)
+prob = predict(fit3, type = &quot;response&quot;)
+class_diag(prob, data$Biopsy)</code></pre>
+<pre><code>##         acc sens spec ppv  f1       auc
+## 1 0.9320532    0    1 NaN NaN 0.5248226</code></pre>
+<pre class="r"><code># ultimately, accuracy = 0.9320532, sensitivity = 0, specificity = 1, precision is N/A, AUC = 0.5248226</code></pre>
+<pre class="r"><code># ROC curve, AUC:
+library(plotROC)
+ROCplot &lt;- ggplot(data) + geom_roc(aes(d = Biopsy, 
+    m = Number.of.sexual.partners + Hormonal.Contraceptives..years.), n.cuts = 0)
+ROCplot</code></pre>
+<p><img src="../../projects/project2_files/figure-html/unnamed-chunk-18-1.png" width="480" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>calc_auc(ROCplot)</code></pre>
+<pre><code>##   PANEL group      AUC
+## 1     1    -1 0.500379</code></pre>
+<pre class="r"><code># AUC is found to be 0.500379, so the model is not performing well/is not accurate. This is evidenced by the confusion matrix&#39;s prediction of 0 cancerous biopsies.</code></pre>
+<pre class="r"><code># density plot of log-odds colored/grouped by binary outcome variable:
+data$logit&lt;-predict(fit3,type=&quot;link&quot;)
+data$prob&lt;-predict(fit3,type=&quot;response&quot;) 
+data$Biopsy&lt;-factor(data$Biopsy,levels=c(&quot;1&quot;,&quot;0&quot;))
+data%&gt;%ggplot(aes(logit,color=Biopsy,fill=Biopsy))+geom_density(alpha=.4)+theme(legend.position=c(.85,.85))+xlab(&quot;predictor (logit)&quot;)</code></pre>
+<p><img src="../../projects/project2_files/figure-html/unnamed-chunk-19-1.png" width="480" style="display: block; margin: auto;" /></p>
+</div>
+<div id="logistic-regression-with-all-variables" class="section level2">
+<h2>6) Logistic regression, with all variables</h2>
+<pre class="r"><code># log reg: same binary response variable from all of the rest of variables
+fit4 &lt;- glm(Biopsy ~ ., data = data, family = &quot;binomial&quot;)
+prob4 &lt;- predict(fit4, type = &quot;response&quot;)
+class_diag(prob4, data$Biopsy)</code></pre>
+<pre><code>##         acc sens spec       ppv        f1       auc
+## 0 0.9320532    1    0 0.9320532 0.9648318 0.5825984</code></pre>
+<pre class="r"><code># compute: accuracy, sensitivity, specificity, precision, AUC, interpret
+# accuracy (0.9320532, great) means 0.9320532 of the predictions were correct. 
+# sensitivity (1) means the true positive rate was 100% accurate (100% probability of detecting cervical cancer if the woman actually has it). This is interesting because in Q5 sens=0.
+# specificity (0) means the true negative rate was 0% accurate. 0 probability of a negative biopsy for non-cancerous woman. All false positives for this group. 
+# precision (0.9320532, great) means 0.9320532 of those classified with cervical cancer actually are.
+# AUC (0.5825984, bad) indicates that the model very poorly predicts cancer rate correctly.</code></pre>
+<pre class="r"><code># 10-fold CV:
+set.seed(1234)
+k = 10
+data1 &lt;- data[sample(nrow(data)), ]
+folds1 &lt;- cut(seq(1:nrow(data)), breaks = k, labels = FALSE)
+diags &lt;- NULL
+for (i in 1:k) {
+    train &lt;- data1[folds1 != i, ]
+    test &lt;- data1[folds1 == i, ]
+    truth &lt;- test$Biopsy
+    fit6 &lt;- glm(Biopsy ~ (.), data = train, family = &quot;binomial&quot;)
+    probs &lt;- predict(fit6, newdata = test)
+    diags &lt;- rbind(diags, class_diag(probs, truth))
+}
+summarize_all(diags, mean)</code></pre>
+<pre><code>##         acc sens spec       ppv       f1       auc
+## 1 0.9320237    1    0 0.9320237 0.964559 0.5119206</code></pre>
+<pre class="r"><code># compared with in-sample results, 10-fold CV yields very similar accuracy (0.9320237), the same sensitivity (1) and specificity (0), very similar precision (0.9320237) and even lower AUC (0.5119206) which indicates a very poor predictive model of true cancerous biopsy rates.</code></pre>
+<pre class="r"><code># LASSO:
+library(glmnet)
+set.seed(1234)
+data_preds &lt;- model.matrix(Biopsy ~ ., data = data)[, -1] 
+data_response &lt;- as.matrix(data$Biopsy) 
+cv &lt;- cv.glmnet(data_preds, data_response, family = &quot;binomial&quot;)
+lasso_fit &lt;- glmnet(data_preds, data_response, family = &quot;binomial&quot;, lambda = cv$lambda.1se)
+coef(lasso_fit)</code></pre>
+<pre><code>## 11 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                                        s0
+## (Intercept)                     -2.618664
+## Number.of.sexual.partners        0.000000
+## Num.of.pregnanciesNo             .       
+## Num.of.pregnanciesRisk           .       
+## Smokes..years.                   .       
+## Hormonal.Contraceptives..years.  .       
+## IUD0                             .       
+## IUD1                             .       
+## Hormonal_c                       .       
+## logit                            .       
+## prob                             .</code></pre>
+<pre class="r"><code># LASSO yields NO variables retained (no non-zero coefficients).
+# Since no variables were retained, I could not perform 10-fold CV using LASSO-selected variables. </code></pre>
+</div>
+</div>
+
+            
+        <hr>         <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div> 
+            </div>
+          </div>
+
+   <hr>  <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div> 
+        </div>
+      </div>
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="../../js/docs.min.js"></script>
+<script src="../../js/main.js"></script>
+
+<script src="../../js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

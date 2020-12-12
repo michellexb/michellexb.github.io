@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Michelle Bao" />
+    
+    <link rel="shortcut icon" type="image/x-icon" href="../../img/favicon.ico">
+    <title>Project 1</title>
+    <meta name="generator" content="Hugo 0.79.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../../css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="../../post/">BLOG</a></li>
+        
+        <li><a href="../../projects/">PROJECTS</a></li>
+        
+        <li><a href="../../resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="../../projects/project1/">Project 1</a></strong>
+          </h3>
+        </div>
+ 
+<div class="blog-title">
+          <h4>
+         January 1, 0001 
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+<link href="../../rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="../../rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<div id="michelle-bao---mb57592---project-1" class="section level1">
+<h1>Michelle Bao - MB57592 - Project 1</h1>
+</div>
+<div id="introduction" class="section level1">
+<h1>0) INTRODUCTION</h1>
+<div id="paragraph" class="section level4">
+<h4>paragraph:</h4>
+<pre class="r"><code>## My 2 datasets from countyhealthrankings.org were adapted
+## from the 2020 County Health Rankings in order to only
+## contain the Texas counties data. The common ID variable
+## between the 2 datasets is Texas county name.  The first
+## dataset called &#39;Additional Measure Data&#39; contains 3 numeric
+## variables which are &#39;Percent.Not.Proficient.in.English&#39;,
+## &#39;Percent.Rural&#39;, and &#39;Life.Expectancy&#39;.
+## &#39;Percent.Not.Proficient.in.English&#39; is the percentage of
+## residents in the county who are not fluent in English.
+## &#39;Percent.Rural&#39; is the percentage of the county that is
+## classified as rural.  &#39;Life.Expectancy&#39; is the average life
+## expectancy for individuals of all race backgrounds in the
+## county.  The second dataset &#39;Ranked Measure Data&#39; is from
+## the same 2020 report, and was simplified to contain 1
+## categorical variable &#39;Quartile...PCP.Ratio&#39; which is
+## categorized &#39;1, 2, 3, or 4&#39; depending on the county&#39;s PCP
+## (primary healthcare provider, aka doctors) ratio rank
+## within the state.  Higher quartile rank correlates to a
+## higher PCP:resident ratio, meaning that there are less
+## primary care providers for a larger population of
+## residents.
+
+## I am interested in this data because my Senior
+## Undergraduate Thesis explores the impacts of telemedicine
+## on access to care.  I expect to see a negative/indirect
+## association between &#39;Percent.Not.Proficient.in.English&#39; and
+## &#39;Life.Expectancy&#39;. I also expect to see &#39;Life.Expectancy&#39;
+## increase as the &#39;Quartile...PCP.Ratio&#39; increases.
+library(dplyr)
+library(tidyverse)
+
+dataset1 &lt;- read.csv(&quot;data1rankedmeasuredata.csv&quot;, header = TRUE)
+head(dataset1)</code></pre>
+<pre><code>##      County Quartile...PCP.Ratio
+## 1  Anderson                    3
+## 2   Andrews                    2
+## 3  Angelina                    1
+## 4   Aransas                    3
+## 5    Archer                    2
+## 6 Armstrong                    4</code></pre>
+<pre class="r"><code>dataset2 &lt;- read.csv(&quot;data2-addlmeasuredata.csv&quot;, header = TRUE)
+head(dataset2)</code></pre>
+<pre><code>##      County Percent.Not.Proficient.in.English Percent.Rural Life.Expectancy
+## 1  Anderson                                 3          67.1            73.4
+## 2   Andrews                                 8          16.5            77.5
+## 3  Angelina                                 4          43.1            76.1
+## 4   Aransas                                 2          27.3            77.9
+## 5    Archer                                 1          89.0            78.8
+## 6 Armstrong                                 1         100.0            77.4</code></pre>
+</div>
+</div>
+<div id="tidying" class="section level1">
+<h1>1) TIDYING</h1>
+<pre class="r"><code># My datasets were already tidy. So, I will be using
+# &#39;pivot_wider()&#39; to make &#39;dataset1&#39; untidy, and then use
+# &#39;pivot_longer()&#39; in order to re-tidy it.
+
+# make dataset1 untidy via &#39;pivot_wider()&#39;
+untidy1 &lt;- dataset1 %&gt;% pivot_wider(names_from = &quot;County&quot;, values_from = &quot;Quartile...PCP.Ratio&quot;)
+
+# re-tidy dataset1 via &#39;pivot_longer()&#39;
+untidy1 %&gt;% pivot_longer(cols = c(1:254), names_to = &quot;County&quot;, 
+    values_to = &quot;Quartile PCP Ratio&quot;)</code></pre>
+<pre><code>## # A tibble: 254 x 2
+##    County    `Quartile PCP Ratio`
+##    &lt;chr&gt;                    &lt;int&gt;
+##  1 Anderson                     3
+##  2 Andrews                      2
+##  3 Angelina                     1
+##  4 Aransas                      3
+##  5 Archer                       2
+##  6 Armstrong                    4
+##  7 Atascosa                     4
+##  8 Austin                       4
+##  9 Bailey                       2
+## 10 Bandera                      3
+## # … with 244 more rows</code></pre>
+<pre class="r"><code># dataset1 is now re-tidy, back to original</code></pre>
+</div>
+<div id="joining" class="section level1">
+<h1>2) JOINING</h1>
+<pre class="r"><code># Both datasets began with 254 observations- 1 for each of
+# the 254 counties in Texas. The ID&#39;s for the counties were
+# spelled and capitalized consistently across the 2 datasets.
+
+# I chose to use &#39;inner_join&#39;. &#39;inner_join&#39; works by dropping
+# observation ID&#39;s that are missing in either dataset. Rather
+# than introducing NA observations, any and all unmatched
+# observations are dropped. Since both of my datasets both
+# had all of the same observation ID&#39;s present, all of the
+# join options would have yielded the same result: 254
+# observations of all of the counties. &#39;inner_join&#39; results
+# will show the same number of observations as the number of
+# ID intersections between the 2 datasets. This is evidenced
+# here: the 2 datasets share 254 county ID&#39;s, and the joined
+# dataset shows 254 observations.
+
+# No observations were dropped after joining, since both
+# datasets had the same observations. Observations will be
+# removed in the next step (Wrangling) and the potential
+# consequences will be discussed there.
+
+fulldata &lt;- dataset1 %&gt;% inner_join(dataset2)
+head(fulldata)</code></pre>
+<pre><code>##      County Quartile...PCP.Ratio Percent.Not.Proficient.in.English
+## 1  Anderson                    3                                 3
+## 2   Andrews                    2                                 8
+## 3  Angelina                    1                                 4
+## 4   Aransas                    3                                 2
+## 5    Archer                    2                                 1
+## 6 Armstrong                    4                                 1
+##   Percent.Rural Life.Expectancy
+## 1          67.1            73.4
+## 2          16.5            77.5
+## 3          43.1            76.1
+## 4          27.3            77.9
+## 5          89.0            78.8
+## 6         100.0            77.4</code></pre>
+</div>
+<div id="wrangling" class="section level1">
+<h1>3) WRANGLING</h1>
+<div id="a-use-filter" class="section level2">
+<h2>3.a) use 'filter'</h2>
+<pre class="r"><code># I used &#39;filter&#39; and &#39;na.omit&#39; to omit any observation rows
+# that had &#39;NA&#39; in any column. Originally, there are 254
+# counties/observations in Texas in the joined dataset, but
+# &#39;na.omit&#39; removed 17 observations, resulting in 237
+# counties in the filtered dataset. For example, county
+# &#39;Borden&#39; was omitted because it contained &#39;NA&#39; in the
+# &#39;Quartile...PCP.Ratio&#39; variable. Potential problems in a
+# real-life context include omission of crucial healthcare
+# data, which will lead to a lack of knowledge and study of
+# certain counties, possibly resulting in a lack of
+# healthcare reform, which may manifest, for example, as
+# fewer tax dollar dedications to improving medical
+# facilities in these counties.
+
+fulldataUSE &lt;- fulldata %&gt;% filter(!is.na(Quartile...PCP.Ratio)) %&gt;% 
+    filter(!is.na(Percent.Not.Proficient.in.English)) %&gt;% filter(!is.na(Percent.Rural)) %&gt;% 
+    filter(!is.na(Life.Expectancy))
+
+glimpse(fulldataUSE)</code></pre>
+<pre><code>## Rows: 237
+## Columns: 5
+## $ County                            &lt;fct&gt; Anderson, Andrews, Angelina, Aransa…
+## $ Quartile...PCP.Ratio              &lt;int&gt; 3, 2, 1, 3, 2, 4, 4, 4, 2, 3, 3, 1,…
+## $ Percent.Not.Proficient.in.English &lt;int&gt; 3, 8, 4, 2, 1, 1, 4, 5, 13, 1, 5, 0…
+## $ Percent.Rural                     &lt;dbl&gt; 67.1, 16.5, 43.1, 27.3, 89.0, 100.0…
+## $ Life.Expectancy                   &lt;dbl&gt; 73.4, 77.5, 76.1, 77.9, 78.8, 77.4,…</code></pre>
+</div>
+<div id="b-use-mutate" class="section level2">
+<h2>3.b) use 'mutate'</h2>
+<pre class="r"><code># 1) mutate: making the categorical variable
+# &#39;Quartile...PCP.Ratio&#39; clearer: changing number values to
+# word values higher number value for quartile correlates to
+# higher &#39;provider:resident&#39; ratio, which is less ideal for
+# patient care. So, &#39;1&#39; correlates to &#39;Excellent&#39; and &#39;4&#39;
+# correlates to &#39;Poor&#39;.
+
+data &lt;- fulldataUSE %&gt;% mutate(Quartile...PCP.Ratio = recode(Quartile...PCP.Ratio, 
+    `1` = &quot;excellent&quot;, `2` = &quot;good&quot;, `3` = &quot;satisfactory&quot;, `4` = &quot;poor&quot;))
+head(data)</code></pre>
+<pre><code>##      County Quartile...PCP.Ratio Percent.Not.Proficient.in.English
+## 1  Anderson         satisfactory                                 3
+## 2   Andrews                 good                                 8
+## 3  Angelina            excellent                                 4
+## 4   Aransas         satisfactory                                 2
+## 5    Archer                 good                                 1
+## 6 Armstrong                 poor                                 1
+##   Percent.Rural Life.Expectancy
+## 1          67.1            73.4
+## 2          16.5            77.5
+## 3          43.1            76.1
+## 4          27.3            77.9
+## 5          89.0            78.8
+## 6         100.0            77.4</code></pre>
+<pre class="r"><code># 2) mutate: generate a variable that is a function of
+# another variable the average life expectancy in Texas
+# overall is 79.1 years. I generated a new variable
+# &#39;LEcomparedtoTX&#39; to compare each county&#39;s life expectancy
+# to Texas&#39; overall. A value of &lt;1 indicates an average life
+# expectancy lower than that of Texas&#39; life expectancy. A
+# value of &gt;1 indicates better county life expectancy than
+# the state&#39;s life expectancy overall.
+head(data %&gt;% mutate(LEcomparedtoTX = Life.Expectancy/79.1))</code></pre>
+<pre><code>##      County Quartile...PCP.Ratio Percent.Not.Proficient.in.English
+## 1  Anderson         satisfactory                                 3
+## 2   Andrews                 good                                 8
+## 3  Angelina            excellent                                 4
+## 4   Aransas         satisfactory                                 2
+## 5    Archer                 good                                 1
+## 6 Armstrong                 poor                                 1
+##   Percent.Rural Life.Expectancy LEcomparedtoTX
+## 1          67.1            73.4      0.9279393
+## 2          16.5            77.5      0.9797724
+## 3          43.1            76.1      0.9620733
+## 4          27.3            77.9      0.9848293
+## 5          89.0            78.8      0.9962073
+## 6         100.0            77.4      0.9785082</code></pre>
+</div>
+<div id="c" class="section level2">
+<h2>3.c)</h2>
+<div id="use-arrange-group_by-summarize-to-generate-10-summary-statistics-5-unique-functions-mean-sd-etc-2-grouped-by-categorical-correlation-matrix" class="section level4">
+<h4>use 'arrange' , 'group_by' , 'summarize' to generate 10 summary statistics, 5 unique functions (mean, sd, etc), 2 grouped by categorical, correlation matrix</h4>
+<pre class="r"><code># 1-5) use 5 unique functions (mean, sd, etc) inside
+# &#39;summarize()&#39;
+
+# 1) mean % rural across counties = 52.33038%
+data %&gt;% summarize(mean_percent_rural = mean(Percent.Rural, na.rm = T))</code></pre>
+<pre><code>##   mean_percent_rural
+## 1           52.33038</code></pre>
+<pre class="r"><code># 2) number of distinct life expectancy values = 87 distinct
+# year values
+data %&gt;% summarize(n_distinct(Life.Expectancy))</code></pre>
+<pre><code>##   n_distinct(Life.Expectancy)
+## 1                          87</code></pre>
+<pre class="r"><code># 3) minimum county life expectancy value = 71.9 years
+data %&gt;% summarize(min(Life.Expectancy))</code></pre>
+<pre><code>##   min(Life.Expectancy)
+## 1                 71.9</code></pre>
+<pre class="r"><code># 4) maximum county % not proficient in English value = 30%
+data %&gt;% summarize(max(Percent.Not.Proficient.in.English))</code></pre>
+<pre><code>##   max(Percent.Not.Proficient.in.English)
+## 1                                     30</code></pre>
+<pre class="r"><code># 5) median % rural population value = 50.2%
+data %&gt;% summarize(median(Percent.Rural))</code></pre>
+<pre><code>##   median(Percent.Rural)
+## 1                  50.2</code></pre>
+<pre class="r"><code># 6-7) 2 statistics grouped by categorical variable
+
+# 6) mean life expectancy, grouped by &#39;Quartile...PCP.Ratio&#39;
+# categorical groups, arranged by descending average life
+# expectancy (high-&gt;low).
+data %&gt;% group_by(Quartile...PCP.Ratio) %&gt;% summarize(mean_LifeExpectancy = mean(Life.Expectancy, 
+    na.rm = T)) %&gt;% arrange(desc(mean_LifeExpectancy))</code></pre>
+<pre><code>## # A tibble: 4 x 2
+##   Quartile...PCP.Ratio mean_LifeExpectancy
+##   &lt;chr&gt;                              &lt;dbl&gt;
+## 1 excellent                           78.1
+## 2 good                                78.0
+## 3 satisfactory                        77.1
+## 4 poor                                76.7</code></pre>
+<pre class="r"><code># 7) mean percentage of rural population, grouped by
+# &#39;Quartile...PCP.Ratio&#39; categorical groups, arranged by
+# descending percentage of rural.
+data %&gt;% group_by(Quartile...PCP.Ratio) %&gt;% summarize(mean_PercentRural = mean(Percent.Rural, 
+    na.rm = T)) %&gt;% arrange(desc(mean_PercentRural))</code></pre>
+<pre><code>## # A tibble: 4 x 2
+##   Quartile...PCP.Ratio mean_PercentRural
+##   &lt;chr&gt;                            &lt;dbl&gt;
+## 1 good                              60.3
+## 2 poor                              59.1
+## 3 satisfactory                      55.6
+## 4 excellent                         34.2</code></pre>
+<pre class="r"><code># 8-9) more summary statistics
+
+# 8) mean life expectancy for counties with 25% or more of
+# the population not proficient in English = 83.125 years.
+data %&gt;% filter(Percent.Not.Proficient.in.English &gt;= 25) %&gt;% 
+    summarize(mean(Life.Expectancy))</code></pre>
+<pre><code>##   mean(Life.Expectancy)
+## 1                83.125</code></pre>
+<pre class="r"><code># 9) mean life expectancy with a minimal rural population
+# percentage (0-10%) = 79.42222 years.
+data %&gt;% filter(between(Percent.Rural, 0, 10)) %&gt;% summarize(mean(Life.Expectancy))</code></pre>
+<pre><code>##   mean(Life.Expectancy)
+## 1              79.42222</code></pre>
+<pre class="r"><code># 10) correlation matrix of numeric variables
+cormatrix &lt;- data %&gt;% select_if(is.numeric) %&gt;% cor(use = &quot;pair&quot;)
+cormatrix</code></pre>
+<pre><code>##                                   Percent.Not.Proficient.in.English
+## Percent.Not.Proficient.in.English                         1.0000000
+## Percent.Rural                                            -0.3175967
+## Life.Expectancy                                           0.3960422
+##                                   Percent.Rural Life.Expectancy
+## Percent.Not.Proficient.in.English    -0.3175967       0.3960422
+## Percent.Rural                         1.0000000      -0.1726833
+## Life.Expectancy                      -0.1726833       1.0000000</code></pre>
+</div>
+</div>
+</div>
+<div id="visualizing" class="section level1">
+<h1>4) VISUALIZING</h1>
+<pre class="r"><code># 4.a) correlation heatmap of numeric variables
+tidycor &lt;- cormatrix %&gt;% as.data.frame %&gt;% rownames_to_column(&quot;var1&quot;) %&gt;% 
+    pivot_longer(-1, names_to = &quot;var2&quot;, values_to = &quot;correlation&quot;)
+
+tidycor %&gt;% ggplot(aes(var1, var2, fill = correlation)) + geom_tile() + 
+    scale_fill_gradient2(low = &quot;red&quot;, mid = &quot;white&quot;, high = &quot;blue&quot;) + 
+    geom_text(aes(label = round(correlation, 2)), color = &quot;black&quot;, 
+        size = 4) + theme(axis.text.x = element_text(angle = 90, 
+    hjust = 1)) + coord_fixed()</code></pre>
+<p><img src="../../projects/project1_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># 1st of 2 ggplot: Rural Population Percentage vs. Life
+# Expectancy, colored by PCP Ratio Quartile geom_point
+# changed theme element: legend text color &amp; size changed
+# color for mapping: changed color of axis labels for mapping
+# x-axis &#39;Rural Population&#39; add more x-axis tick marks, by
+# 10&#39;s plot summary: The graph shows a minimal-to-no
+# correlation between rural percentage and life expectancy.
+# As you move right-ward on the x-axis (rural population
+# increases), life expectancy remains randomly scattered,
+# although the trend line appears to be slightly negative.
+# There also appears to be some relationship between PCP
+# ratio and rural population, with noticeable changes
+# regarding &#39;excellent&#39; and &#39;poor&#39; PCP ratios. As you move
+# right-ward on the x-axis (rural population increases), the
+# presence of red &#39;excellent&#39; dots decreases, and the
+# presence of &#39;poor&#39; dots increases, but the amount of other
+# PCP ratios (good, satisfactory) remains the same. Finally,
+# there appears to be no correlation between PCP ratio and
+# life expectancy. As you move up the y-axis (life expectancy
+# increases), there are dots of all 4 colors, indicating no
+# correlation between PCP ratio and life expectancy. These
+# results are further supported by the faceted graph.
+plot1 &lt;- ggplot(data = data, aes(x = Percent.Rural, y = Life.Expectancy, 
+    color = Quartile...PCP.Ratio)) + geom_point(size = 3, alpha = 0.4) + 
+    ggtitle(&quot;Texas Counties: Rural Populations vs. Life Expectancy, colored by PCP Ratio&quot;) + 
+    ylab(&quot;Life Expectancy (years)&quot;) + xlab(&quot;Rural Population of the County (%)&quot;) + 
+    theme(legend.text = element_text(colour = &quot;blue&quot;, size = 10)) + 
+    scale_x_continuous(breaks = seq(0, 100, 10)) + theme(axis.text.x = element_text(face = &quot;bold&quot;, 
+    color = &quot;#993333&quot;))
+plot1</code></pre>
+<p><img src="../../projects/project1_files/figure-html/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># plot faceted by PCP Ratio
+plot1 + facet_wrap(~Quartile...PCP.Ratio)</code></pre>
+<p><img src="../../projects/project1_files/figure-html/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># 2nd of 2 ggplot: Non-Fluent English Percentage vs. Percent
+# Rural, faceted by PCP Ratio
+
+# different geom: geom_bar changed theme element:
+# theme_minimal changed color of mapping: changed color of
+# x-axis ticks used stat=&#39;summary&#39; function plot summary:
+# Overall, for all PCP ratio groups, as the percentage of
+# non-English speakers increases, the rural population
+# decreases, particularly for counties with a &#39;good&#39; PCP
+# ratio. Although, the good PCP ratio counties have an
+# outlier in the trend-line at the observation of 30%
+# non-English population.  There is no correlation between
+# non-English population and PCP ratio- for example: 30%
+# non-English population counties exist in the poor,
+# satisfactory, and good PCP ratio categories. Excellent PCP
+# ratio counties have the lowest proportions of rural
+# populations, on average. For poor PCP ratio counties, rural
+# population remains about constant as non-English population
+# increases, until a non-English percentage of about 7% where
+# the rural population percentage begins to drop.
+data %&gt;% ggplot(aes(Percent.Not.Proficient.in.English, Percent.Rural)) + 
+    geom_bar(stat = &quot;summary&quot;) + facet_wrap(~Quartile...PCP.Ratio) + 
+    ggtitle(&quot;Texas Counties: Non-English Populations vs. Rural Populations, faceted by PCP Ratio&quot;) + 
+    ylab(&quot;Rural Population of the County (%)&quot;) + xlab(&quot;Non-Fluent in English Population of the County (%)&quot;) + 
+    theme_minimal() + theme(axis.text.x = element_text(face = &quot;bold&quot;, 
+    color = &quot;#993333&quot;))</code></pre>
+<p><img src="../../projects/project1_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="dimensionality-reduction" class="section level1">
+<h1>5) DIMENSIONALITY REDUCTION</h1>
+<pre class="r"><code># using PAM
+library(cluster)
+
+# modify daa by removing categorical variables, leaving
+# numerical variables only, find gower dissimilarities
+data2 &lt;- data %&gt;% mutate_if(is.character, as.factor) %&gt;% column_to_rownames(&quot;County&quot;) %&gt;% 
+    select(-Quartile...PCP.Ratio)
+gower1 &lt;- daisy(data2, metric = &quot;gower&quot;)
+
+
+# using silhouette width:
+sil_width &lt;- vector()
+for (i in 2:10) {
+    pam_fit &lt;- pam(gower1, diss = TRUE, k = i)
+    sil_width[i] &lt;- pam_fit$silinfo$avg.width
+}
+
+# plot: which k value to pick
+ggplot() + geom_line(aes(x = 1:10, y = sil_width)) + scale_x_continuous(name = &quot;k&quot;, 
+    breaks = 1:10)</code></pre>
+<p><img src="../../projects/project1_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># yields k=10 is the best cluster value
+
+# now, use gower dissimilarities to perform PAM clustering
+pam10 &lt;- pam(gower1, k = 10, diss = T)
+
+# plot to interpret fit
+plot(pam10, which = 2)</code></pre>
+<p><img src="../../projects/project1_files/figure-html/unnamed-chunk-10-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># final medoids yields Hopkins, Pecos, Nacogdoches, Milam,
+# Van Zandt, Colorado, Frio, Newton, Midland, Haskell
+data %&gt;% slice(pam10$id.med)</code></pre>
+<pre><code>##          County Quartile...PCP.Ratio Percent.Not.Proficient.in.English
+## 1     Robertson                 poor                                 2
+## 2     Ochiltree         satisfactory                                11
+## 3      Stephens         satisfactory                                 2
+## 4      Lipscomb                 good                                 4
+## 5          Real         satisfactory                                 2
+## 6         Cooke         satisfactory                                 4
+## 7  San Patricio         satisfactory                                 4
+## 8        Brazos            excellent                                 5
+## 9         Pecos                 good                                 8
+## 10        Garza                 poor                                21
+##    Percent.Rural Life.Expectancy
+## 1           73.9            75.8
+## 2           13.9            77.3
+## 3           39.4            76.1
+## 4          100.0            79.7
+## 5          100.0            75.6
+## 6           59.0            77.6
+## 7           19.7            76.2
+## 8           12.1            81.3
+## 9           39.8            78.0
+## 10          22.3            79.6</code></pre>
+<pre class="r"><code># PAM summary: The PCP ratio variable was removed, since it
+# is a categorical variable. The silhouette width method
+# yielded that k=10 clusters was the best fit. Counties
+# Hopkins, Pecos, Nacogdoches, Milam, Van Zandt, Colorado,
+# Frio, Newton, Midland, Haskell were the best
+# representations of their clusters.</code></pre>
+</div>
+
+            
+        <hr>         <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div> 
+            </div>
+          </div>
+
+   <hr>  <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div> 
+        </div>
+      </div>
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="../../js/docs.min.js"></script>
+<script src="../../js/main.js"></script>
+
+<script src="../../js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>
