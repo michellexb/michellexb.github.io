@@ -1,0 +1,51 @@
+---
+title: "Spoken vs. Coding Languages"
+author: ''
+date: '2020-12-11'
+description: ''
+slug: r-vs-python
+tags: []
+categories: []
+---
+INTRO
+As many data scientists and programmers have said, R and Python may be 2 of them most useful languages to know. Similarly, politicians and businessmen say that English and Chinese are the 2 most useful languages to learn. But of course it is difficult to become fluent in both- especially since they are 2 of the most difficult languages both grammar- and vocabulary-wise. This is the same for R and Python. Learning one on its own is hard enough already! Today, I'm going to show you how combining our mediocre mastery of both will still get us by. 
+
+COMBINING FUNCTIONS
+Growing up as an ABC (American-born Chinese) I speak "Chinglish", a.k.a. speaking Chinese but inserting English words when I can't remember the term in English, and vice versa. Both languages are hard and have their own unique terms, rules, etc - just like R and Python. But fear not, we can combine both and get our message across. For example, 
+
+
+Using R, let's say there's a term we only know in Chinese: 
+```{r}
+library(reticulate)
+lunch<- "xiao long bao"
+```
+
+
+Now, using Python, we will combine English and Chinese, in order to fully get our message across:
+```{python}
+lunch="is my favorite food"
+print(r.lunch,lunch)
+```
+
+Boom! If you are more proficient in R (or English), but there are certain unique functions of Python (or Chinese) that you just can't remember the synonym for (or there may not be one), get creative and combine them!
+
+
+THE SAME FUNCTION
+But, most of the time, especially for common terms, both languages can do the same thing, just in different ways. 
+
+For example, it was easier for me to remember the English word for "avocado" than the Chinese one, just like how it's easier for me to remember how to find mean in R, over Python.
+```{r}
+data <- c(2.5, -1, -12, 7.5)
+mean(data)
+```
+
+But, of course there is still a term for "avocado" in Chinese, just as there is a way to find mean in Python. It just comes a little slower.
+```{python}
+import numpy as np
+np.mean(r.data)
+```
+
+In both spoken languages and coding languages, if you really want to seem cool, you can flex your knowledge of both.
+
+
+---

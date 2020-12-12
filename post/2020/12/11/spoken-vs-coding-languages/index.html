@@ -7,7 +7,7 @@
     <meta name="author" content="Michelle Bao" />
     
     <link rel="shortcut icon" type="image/x-icon" href="../../../../../img/favicon.ico">
-    <title>R vs. Python </title>
+    <title>Spoken vs. Coding Languages</title>
     <meta name="generator" content="Hugo 0.79.0" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="../../../../../css/main.css" />
@@ -54,7 +54,7 @@
       <div class="container">
         <div class="blog-post">
           <h3>
-            <strong><a href="../../../../../post/2020/12/11/r-vs-python/">R vs. Python </a></strong>
+            <strong><a href="../../../../../post/2020/12/11/spoken-vs-coding-languages/">Spoken vs. Coding Languages</a></strong>
           </h3>
         </div>
  
@@ -69,10 +69,40 @@
         <div class="panel panel-default">
           <div class="panel-body">
             <div class="blogpost">
-              <p>As many data scientists and programmers have said, R and Python may be 2 of them most useful languages to know. But&hellip; you may be thinking &ldquo;I don&rsquo;t have time to learn both!&rdquo; Understandable. Today, I&rsquo;m going to show you how 1) each language can accomplish the same task, and 2) how your knowledge of both may make your life easier and elevate your skills.</p>
-<p>Growing up as an ABC (American-born Chinese) I speak &ldquo;Chinglish&rdquo;, a.k.a. speaking Chinese but inserting English words when I can&rsquo;t remember the term in English. Both languages are hard and have their own unique terms, strengths, rules, etc - just like R and Python. But, there are large similarities. For example,</p>
-<p>Using R:</p>
-<h2 id="oftentimes-i-remember-the-english-term-more-quickly-rather-than-the-chinese-one-out-of-laziness-and-efficiency-i-will-speak-english">Oftentimes, I remember the English term more quickly, rather than the Chinese one. Out of laziness and efficiency, I will speak English.</h2>
+              
+<link href="../../../../../rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="../../../../../rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<div id="intro" class="section level1">
+<h1>INTRO</h1>
+<p>As many data scientists and programmers have said, R and Python may be 2 of them most useful languages to know. Similarly, politicians and businessmen say that English and Chinese are the 2 most useful languages to learn. But of course it is difficult to become fluent in both- especially since they are 2 of the most difficult languages both grammar- and vocabulary-wise. This is the same for R and Python. Learning one on its own is hard enough already! Today, I'm going to show you how combining our mediocre mastery of both will still get us by.</p>
+</div>
+<div id="combining-functions" class="section level1">
+<h1>COMBINING FUNCTIONS</h1>
+<p>Growing up as an ABC (American-born Chinese) I speak &quot;Chinglish&quot;, a.k.a. speaking Chinese but inserting English words when I can't remember the term in English, and vice versa. Both languages are hard and have their own unique terms, rules, etc - just like R and Python. But fear not, we can combine both and get our message across. For example,</p>
+<p>Using R, let's say there's a term we only know in Chinese:</p>
+<pre class="r"><code>library(reticulate)
+lunch&lt;- &quot;xiao long bao&quot;</code></pre>
+<p>Now, using Python, we will combine English and Chinese, in order to fully get our message across:</p>
+<pre class="python"><code>lunch=&quot;is my favorite food&quot;
+print(r.lunch,lunch)</code></pre>
+<pre><code>## xiao long bao is my favorite food</code></pre>
+<p>Boom! If you are more proficient in R (or English), but there are certain unique functions of Python (or Chinese) that you just can't remember the synonym for (or there may not be one), get creative and combine them!</p>
+</div>
+<div id="the-same-function" class="section level1">
+<h1>THE SAME FUNCTION</h1>
+<p>But, most of the time, especially for common terms, both languages can do the same thing, just in different ways.</p>
+<p>For example, it was easier for me to remember the English word for &quot;avocado&quot; than the Chinese one, just like how it's easier for me to remember how to find mean in R, over Python.</p>
+<pre class="r"><code>data &lt;- c(2.5, -1, -12, 7.5)
+mean(data)</code></pre>
+<pre><code>## [1] -0.75</code></pre>
+<p>But, of course there is still a term for &quot;avocado&quot; in Chinese, just as there is a way to find mean in Python. It just comes a little slower.</p>
+<pre class="python"><code>import numpy as np
+np.mean(r.data)</code></pre>
+<pre><code>## -0.75</code></pre>
+<p>In both spoken languages and coding languages, if you really want to seem cool, you can flex your knowledge of both.</p>
+</div>
 
             
         <hr>         <div class="related-posts">
