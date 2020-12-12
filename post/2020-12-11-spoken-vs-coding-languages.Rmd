@@ -10,7 +10,7 @@ description: ''
 
 # INTRO
 
-As many data scientists and programmers have said, R and Python may be 2 of them most useful languages to know. Similarly, politicians and businessmen say that English and Chinese are the 2 most useful languages to learn. But of course it is difficult to become fluent in both- especially since they are 2 of the most difficult languages both grammar- and vocabulary-wise. This is the same for R and Python. Learning one on its own is hard enough already! Today, I'm going to show you how combining our mediocre mastery of both will still get us by. 
+As many data scientists and programmers have said, R and Python may be 2 of the most useful languages to know. Similarly, politicians and businessmen say that English and Chinese are the 2 most useful languages to learn. But of course it is difficult to become fluent in both- especially since they are 2 of the most difficult languages both grammar- and vocabulary-wise. This is the same for R and Python. Learning one on its own is hard enough already! Today, I'm going to show you how combining our mediocre mastery of both will still get us by. 
 
 # COMBINING FUNCTIONS
 
@@ -37,7 +37,7 @@ Boom! If you are more proficient in R (or English), but there are certain unique
 
 But, most of the time, especially for common terms, both languages can do the same thing, just in different ways. 
 
-For example, it was easier for me to remember the English word for "avocado" than the Chinese one, just like how it's easier for me to remember how to find mean in R, over Python.
+For example, it is easier for me to remember the English word for "avocado" than the Chinese one, just like how it's easier for me to remember how to find mean in R, over Python.
 ```{r}
 data <- c(2.5, -1, -12, 7.5)
 mean(data)
