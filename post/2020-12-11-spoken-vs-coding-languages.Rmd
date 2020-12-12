@@ -14,7 +14,7 @@ As many data scientists and programmers have said, R and Python may be 2 of the 
 
 # COMBINING FUNCTIONS
 
-Growing up as an ABC (American-born Chinese) I speak "Chinglish", a.k.a. speaking Chinese but inserting English words when I can't remember the term in English, and vice versa. Both languages are hard and have their own unique terms, rules, etc - just like R and Python. But fear not, we can combine both and get our message across. For example, 
+Growing up as an ABC (American-born Chinese) I speak "Chinglish", a.k.a. speaking Chinese but inserting English words when I can't remember the term, and vice versa. Both languages are hard and have their own unique terms, rules, etc - just like R and Python. But fear not, we can combine both and get our message across. For example, 
 
 
 Using R, let's say there's a term we only know in Chinese: 
