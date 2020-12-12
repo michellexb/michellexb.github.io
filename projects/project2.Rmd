@@ -1,8 +1,324 @@
 ---
 title: "Project 2"
-author: "Me"
-date: "2020-12-01"
-output: html_document
+author: "Michelle Bao - MB57592"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+  pdf_document:
+    toc: yes
 ---
 
-## Test Project 2
+```{r setup, include=FALSE}
+library(knitr)
+hook_output = knit_hooks$get('output')
+knit_hooks$set(output = function(x, options) {
+  # this hook is used only when the linewidth option is not NULL
+  if (!is.null(n <- options$linewidth)) {
+    x = knitr:::split_lines(x)
+    # any lines wider than n should be wrapped
+    if (any(nchar(x) > n)) x = strwrap(x, width = n)
+    x = paste(x, collapse = '\n')
+  }
+  hook_output(x, options)
+})
+
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE,fig.align="center",warning=FALSE,message=FALSE,fig.width=5, fig.height=3, linewidth=300)
+options(tibble.width = NULL)
+
+#HERE'S THE CLASSIFICAITON DIAGNOSTICS FUNCTION
+class_diag<-function(probs,truth){
+  tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+  f1=2*(sens*ppv)/(sens+ppv)
+
+  if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE){
+    truth<-as.numeric(truth)-1}
+  
+  #CALCULATE EXACT AUC
+  ord<-order(probs, decreasing=TRUE)
+  probs <- probs[ord]; truth <- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup<-c(probs[-1]>=probs[-length(probs)], FALSE)
+  TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+  
+  n <- length(TPR)
+  auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+
+  data.frame(acc,sens,spec,ppv,f1,auc)
+}
+```
+```
+
+# Michelle Bao - MB57592 - Project 2
+
+
+## 0) Introduction 
+```{r}
+# This "Cervical Cancer Risk Factors for Biopsy" dataset was obtained thanks to UCI Repository. I chose this dataset because I currently work at a ob/gyn clinic and my passion for women's health is what initially motivated me to pursue a medical career. Additionally, cervical cancer is one of the most preventable cancers. The original dataset contained 858 observations and 36 columns. For efficiency, I have only included the following 6 variables: 
+```
+
+```{r}
+#  Binary variable (1): 
+#  "IUD" - 0 or 1. Research shows that IUD usage may reduce cervical cancer risks up to 30%.
+
+#  Numeric varaibles (3): 
+#  "Hormonal.Contraceptives..years." - CDC states that 5+ years of birth control pill use can increase risk.
+#  "Smokes..years." - CDC lists smoking as a risk factor for cervical cancer.
+#  "Number.of.sexual.partners" - Per Mayo Clinic, a greater number of partners increases HPV risk.
+
+#  Categorical variable (1): 
+#  "Num.of.pregnancies" - CDC lists having given birth to 3+ children as a risk factor. So, I adjusted the variable from numeric to categorical: 'Risk' = 3+, 'No' = 0-2
+
+#  Response variable (1): 
+#  "Biopsy" - 0 or 1. Biopsy is a method of tissue retrieval used to test for cervical cancer.
+```
+
+```{r}
+library(dplyr) 
+library(tidyverse)
+library(randomForest)
+library(glmnet)
+data <- read.csv("prj2data.csv",header=TRUE)
+```
+
+```{r}
+# modify "Num.of.pregnancies" variable to become categorical, rather than numeric:
+data<-data%>%mutate(Num.of.pregnancies = recode(Num.of.pregnancies, '0' = "No", '1' = "No", '2' = "No", '3' = "Risk", `4` = "Risk", '5' = "Risk", '6' = "Risk", '7' = "Risk", '8' = "Risk", '9' = "Risk", '10'="Risk", '11'="Risk"))
+
+# remove any observations that has '?' in a column. Now yields 677 observations
+data <- data%>% filter(Num.of.pregnancies!= '?')%>%filter(Number.of.sexual.partners!= '?')%>%filter(Smokes..years.!='?')%>%filter(Hormonal.Contraceptives..years.!='?')%>%filter(IUD!='?')%>%filter(Biopsy!='?')
+glimpse(data)
+```
+
+
+## 1) MANOVA, univariate ANOVA's 
+```{r}
+# MANOVA: categorical variable 'Num.of.pregnancies' ; numerical variables = Hormonal, Smokes, Sexual partners
+manova <- manova(cbind(Hormonal.Contraceptives..years., Smokes..years.,Number.of.sexual.partners) ~ Num.of.pregnancies, data = data)
+summary(manova)
+# since MANOVA yielded significant results (p = 1.052e-09), we perform ANOVA for each response variable:
+summary.aov(manova)
+# before post-hoc t-tests, need to transform numeric variables to 'numeric'
+data<-transform(data, Hormonal.Contraceptives..years. = as.numeric(Hormonal.Contraceptives..years.))
+data<-transform(data, Smokes..years. = as.numeric(Smokes..years.))
+data<-transform(data, Number.of.sexual.partners = as.numeric(Number.of.sexual.partners))
+# post-hoc t-tests. Although unnecessary since the categorical variable only has 2 groups ('No' vs. 'Risk')
+pairwise.t.test(data$Hormonal.Contraceptives..years., data$Num.of.pregnancies, p.adj = "none")
+pairwise.t.test(data$Smokes..years., data$Num.of.pregnancies, p.adj = "none")
+pairwise.t.test(data$Number.of.sexual.partners, data$Num.of.pregnancies, p.adj = "none")
+# post-hoc t-tests yields: significant difference between the Risk and No Risk number of pregnancy groups regarding the number of sexual partners (p = 1.1e-06), and between the Risk and No Risk number of pregnancy groups regarding years of hormonal contraceptive use (p = 1.7e-06), but no significant difference regarding years of smoking (p = 0.35). 
+```
+
+```{r}
+# I completed: 1 MANOVA, 3 ANOVAs, and (6*3) t-tests = 22 total tests
+# making our chance of at least 1 type I error = (1−.95^X) = (1 - .95^22) = 0.6764665 = 67.64665 %
+# so, we should use bonferroni a = .05/22 = 0.002272727 
+# after bonferroni correction, the same results remain: There is a significant difference between the Risk and No Risk number of pregnancy groups regarding the number of sexual partners, and regarding years of hormonal contraceptive use, but no significant difference regarding years of smoking. 
+```
+
+```{r}
+# check MANOVA assumptions
+library(rstatix)
+group <- data$Num.of.pregnancies 
+DVs <- data %>% select(Hormonal.Contraceptives..years. , Smokes..years. , Number.of.sexual.partners)
+# Test multivariate normality for each group:
+# note: code 'sapply(split(DVs,group), mshapiro_test)' gives me error that my sample size is over 5000, so I am using the following: 
+shapiro.test(data$Hormonal.Contraceptives..years.[0:5000])
+shapiro.test(data$Smokes..years.[0:5000])
+shapiro.test(data$Number.of.sexual.partners[0:5000])
+# all 3 yielded p<.05 so assumption is violated. Will not proceed to test for homogeneity of covariance matrices
+# The MANOVA assumptions were NOT met. The population variances were NOT equal across groups. This is likely due to the non-normal nature of the variables (ex: outliers on both ends for years of smoking, 0 or 30+ years)
+```
+
+
+## 2) Randomization test
+```{r}
+# first, calculate observed F-statistic for: categorical = 'Num.of.pregnancies' ; numerical variable = 'Smokes..years.'
+summary(aov(Smokes..years.~Num.of.pregnancies,data=data))
+observedF <- 0.878
+# null hypothesis: The 2 groups (no risk for number of pregnancies, vs. yes risk number of pregnancies) have EQUAL means for years of smoking 
+# alt hypothesis: The groups' means differ
+# randomization test of one-way ANOVA (N=677 and K=2): 
+# note: due to large sample size N=677, for efficiency I used 1000 repititions instead of 5000 because R kept crashing when knitting
+Fs<-replicate(1000,{ 
+ new<-data%>%mutate(Smokes..years.=sample(Smokes..years.)) 
+ SSW<- new%>%group_by(Num.of.pregnancies)%>%summarize(SSW=sum((Smokes..years.-mean(Smokes..years.))^2))%>%
+       summarize(sum(SSW))%>%pull
+ SSB<- new%>%mutate(mean=mean(Smokes..years.))%>%group_by(Num.of.pregnancies)%>%mutate(groupmean=mean(Smokes..years.))%>%
+       summarize(SSB=sum((mean-groupmean)^2))%>%summarize(sum(SSB))%>%pull
+ (SSB/1)/(SSW/675) #compute F statistic (num df = K-1 = 2-1 = 1, denom df = N-K = 677-2 = 675)
+})
+mean(Fs>observedF)
+# interpret results: p-value = 0.367, so we fail to reject the null hypothesis. The groups 'No' and 'Risk' for number of pregnancies do not significantly differ regarding their mean years of smoking.
+# note: when using 5000 repetitions, p=0.347, slightly lower value but still non-significant. (just couldn't knit 5000 reps without R crashing)
+# plot visualizing the null distribution and the test statistic:
+hist(Fs, prob=T); abline(v = observedF, col="red",add=T)
+```
+
+
+## 3) Linear regression
+```{r}
+library(sandwich)
+library(lmtest)
+set.seed(348)
+# first need to mean-center 'Hormonal...'
+data$Hormonal_c <- (data$Hormonal.Contraceptives..years. - mean(data$Hormonal.Contraceptives..years., na.rm = T))
+# linear regression: using response = 'Smokes..years.' , and 'Hormonal...' (numeric), and 'Num.of.pregnancies' (categorical)
+fit1 <- lm(Smokes..years. ~ Hormonal_c * Num.of.pregnancies, data = data)
+summary(fit1)
+```
+
+```{r}
+# interpret coefficients: 
+# intercept = 4.05305: The mean/predicted years of smoking for women with 0 years of hormone usage is 4.05305 years of smoking.
+# coefficient for 'Hormonal_c' = 0.06168: for every 1year increase in hormone usage, predicted years of smoking increases by 0.06168 years.
+# coefficient for 'Num.of.pregnanciesRisk' = 0.39999: Women with 3+ pregnancies ('Risk' group) with 0 years of hormone use have predicted smoking usage of 0.39999 more years than women with 2 or less pregnancies with 0 years of hormone usage. 
+# coefficient for 'Hormonal_c : Num.of.pregnanciesRisk' = -0.07478: The slope of hormone usage years on smoking years for the Risk number of pregnancies group is 0.07478 less than for No Risk pregnancy groups. 
+```
+
+```{r}
+# plot:
+ggplot(data, aes(Hormonal_c, Smokes..years., color = Num.of.pregnancies)) + geom_smooth(method = "lm")
+```
+
+```{r}
+# check linearity: 'Residuals vs Fitted' graph yields somewhat horizontal plot
+plot(fit1)
+# check normality:
+resids<-lm(Smokes..years. ~ Hormonal_c * Num.of.pregnancies, data = data)$residuals
+ggplot()+geom_histogram(aes(resids),bins=10)
+# additionally, in the 'Normal QQ' plot, the residuals are not normally distributed along the dashed line.
+# check homoskedasticity: yields p = 0.009436 , so , fail to reject null hypothesis of homoskedasticity.
+bptest(fit1)
+# overall: linearity met. normality NOT met. homoskedasiticity met. 
+```
+
+```{r}
+# recompute regression results w/ robust SE: results are essentially the same, since homoskedasticity WAS met previously.
+coeftest(fit1, vcov = vcovHC(fit1))
+# Our model explains 0.9873127 of the variation in outcome. The proportion of variance in y (years smoking) explained by x*x (hormonal_c * number of pregnancies) = R^2 = 1- (SSR/SST) = 0.9873127
+1 - summary(fit1)$r.sq
+```
+
+
+## 4) Linear regression, with bootstrapped SE
+```{r}
+# calculate bootstrapped SE via resampling
+samp_dist <- replicate(5000, {
+    boot_dat <- sample_frac(data, replace = T)
+    fit2 <- lm(Smokes..years. ~ Hormonal_c * Num.of.pregnancies, data = boot_dat)
+    coef(fit2)
+})
+samp_dist %>% t %>% as.data.frame %>% summarize_all(sd)
+# changes compared to original SE's and robust SE's
+# The calculation yielded bootstrap SE ~ 0.02605363, ~ 0.5441295, and ~ 0.04136911, respectively, which are all higher/greater than the previous SE's.
+```
+
+
+## 5) Logistic regression
+```{r}
+# logistic regression: using binary response = 'Biopsy' ; 2 explanatory = partners & hormones 
+fit3 <- glm(Biopsy ~ Number.of.sexual.partners + Hormonal.Contraceptives..years., family="binomial", data=data)
+coeftest(fit3)
+# From the logistic regression: 
+# Every 1person increase in the number of sexual partners mulptiplies the odds of positive biopsy results for cervical cancer by e ^ 0.0189490 = 1.01913 times, which is consistent with Mayo Clinic statement.
+# Every 1year increase in hormone birth control usage multiplies the odds of positive/cancerous Biopsy by e ^ -0.0097423 = 0.990305 times.
+```
+
+```{r}
+# confusion matrix:
+prob <- predict(fit3, type = "response")
+truth1 <- data$Biopsy
+table(prediction = as.numeric(prob > 0.5), truth1)
+# confusion matrix yields that 46 of the 46 cancerous biopsy results were identified as false negative, and 0 out of the 631 non-cancer biopsies were false positives. We see a higher false negative rate than false positive rate (aka. no false positives predicted). 
+```
+
+```{r}
+# accuracy, sensitivity (TPR), specificity (TNR), precision (PPV), AUC:
+prob <- predict(fit3, type = "response")
+pred <- ifelse(prob > 0.5, 1, 0)
+table(prediction = pred, truth = data$Biopsy) %>% addmargins
+accuracy = 631/677
+sensitivity = 0/46 # true positive rate, probability of detecting cancer if they really have it
+specificity = 631/631 # probability of a negative biopsy for non-cancerous woman
+# precision = N/A because PPV = proportion classified as cancer who actually are. The model predicted 0 as cancerous.
+library(randomForest)
+prob = predict(fit3, type = "response")
+class_diag(prob, data$Biopsy)
+# ultimately, accuracy = 0.9320532, sensitivity = 0, specificity = 1, precision is N/A, AUC = 0.5248226
+```
+
+```{r}
+# ROC curve, AUC:
+library(plotROC)
+ROCplot <- ggplot(data) + geom_roc(aes(d = Biopsy, 
+    m = Number.of.sexual.partners + Hormonal.Contraceptives..years.), n.cuts = 0)
+ROCplot
+calc_auc(ROCplot)
+# AUC is found to be 0.500379, so the model is not performing well/is not accurate. This is evidenced by the confusion matrix's prediction of 0 cancerous biopsies.
+```
+
+```{r}
+# density plot of log-odds colored/grouped by binary outcome variable:
+data$logit<-predict(fit3,type="link")
+data$prob<-predict(fit3,type="response") 
+data$Biopsy<-factor(data$Biopsy,levels=c("1","0"))
+data%>%ggplot(aes(logit,color=Biopsy,fill=Biopsy))+geom_density(alpha=.4)+theme(legend.position=c(.85,.85))+xlab("predictor (logit)")
+```
+
+
+
+## 6) Logistic regression, with all variables
+```{r}
+# log reg: same binary response variable from all of the rest of variables
+fit4 <- glm(Biopsy ~ ., data = data, family = "binomial")
+prob4 <- predict(fit4, type = "response")
+class_diag(prob4, data$Biopsy)
+# compute: accuracy, sensitivity, specificity, precision, AUC, interpret
+# accuracy (0.9320532, great) means 0.9320532 of the predictions were correct. 
+# sensitivity (1) means the true positive rate was 100% accurate (100% probability of detecting cervical cancer if the woman actually has it). This is interesting because in Q5 sens=0.
+# specificity (0) means the true negative rate was 0% accurate. 0 probability of a negative biopsy for non-cancerous woman. All false positives for this group. 
+# precision (0.9320532, great) means 0.9320532 of those classified with cervical cancer actually are.
+# AUC (0.5825984, bad) indicates that the model very poorly predicts cancer rate correctly.
+```
+
+```{r}
+# 10-fold CV:
+set.seed(1234)
+k = 10
+data1 <- data[sample(nrow(data)), ]
+folds1 <- cut(seq(1:nrow(data)), breaks = k, labels = FALSE)
+diags <- NULL
+for (i in 1:k) {
+    train <- data1[folds1 != i, ]
+    test <- data1[folds1 == i, ]
+    truth <- test$Biopsy
+    fit6 <- glm(Biopsy ~ (.), data = train, family = "binomial")
+    probs <- predict(fit6, newdata = test)
+    diags <- rbind(diags, class_diag(probs, truth))
+}
+summarize_all(diags, mean)
+# compared with in-sample results, 10-fold CV yields very similar accuracy (0.9320237), the same sensitivity (1) and specificity (0), very similar precision (0.9320237) and even lower AUC (0.5119206) which indicates a very poor predictive model of true cancerous biopsy rates.
+```
+
+```{r}
+# LASSO:
+library(glmnet)
+set.seed(1234)
+data_preds <- model.matrix(Biopsy ~ ., data = data)[, -1] 
+data_response <- as.matrix(data$Biopsy) 
+cv <- cv.glmnet(data_preds, data_response, family = "binomial")
+lasso_fit <- glmnet(data_preds, data_response, family = "binomial", lambda = cv$lambda.1se)
+coef(lasso_fit)
+# LASSO yields NO variables retained (no non-zero coefficients).
+# Since no variables were retained, I could not perform 10-fold CV using LASSO-selected variables. 
+```
